@@ -1,9 +1,10 @@
 import pickle
 import numpy as np
 import sklearn
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from flask import Flask, request, render_template
 from flask_cors import CORS
+import pandas as pd
 
 app = Flask(__name__)
 CORS(app) 
@@ -18,13 +19,12 @@ def index():
 def model_input():
     # Handle the form submission
     data = request.get_json()  
+
     try:
         with open('project.pkl', 'rb') as file:
+            column_names= ["Attr1","Attr2","Attr3","Attr4","Attr5","Attr6","Attr7","Attr8","Attr9","Attr10"]
             loaded_model = pickle.load(file)
-            scaler = MinMaxScaler()
-            scaled_data = scaler.fit_transform(np.array(data["Input"]).reshape(1, -1))
-            print("SCALED DATA - ", scaled_data)
-            input_data = scaled_data
+            input_data = pd.DataFrame([data["Input"]], columns=column_names)
 
             # Use the loaded model to make predictions
             predictions = loaded_model.predict(input_data)
